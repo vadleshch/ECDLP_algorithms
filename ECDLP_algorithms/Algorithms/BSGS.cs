@@ -28,7 +28,7 @@ namespace ECDLP_algorithms.Algorithms
                 {
                     return i.Multiply(m).Add(j);
                 }
-                y = secp256k1Group.PointAdd(y, mP);
+                y = y.Add(mP);
             }
             return Int.ValueOf(-1);
         }

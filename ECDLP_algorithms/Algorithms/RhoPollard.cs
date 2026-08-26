@@ -39,16 +39,16 @@ namespace ECDLP_algorithms.Algorithms
             switch (S(R))
             {
                 case 0:
-                    R = secp256k1Group.PointAdd(R, P);
+                    R = R.Add(P);
                     a = a.Add(Int.One).Mod(r);
                     break;
                 case 1:
-                    R = secp256k1Group.PointAdd(R, R);
+                    R = R.Add(R);
                     a = a.Multiply(Int.ValueOf(2)).Mod(r);
                     b = b.Multiply(Int.ValueOf(2)).Mod(r);
                     break;
                 case 2:
-                    R = secp256k1Group.PointAdd(R, Q);
+                    R = R.Add(Q);
                     b = b.Add(Int.One).Mod(r);
                     break;
             }

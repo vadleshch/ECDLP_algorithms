@@ -53,55 +53,10 @@ namespace ECDLP_algorithms
             return Mod(A, N);
         }
 
-        public static Int GetXofPoint(ECPoint R)
-        {
-            return R.XCoord.ToBigInteger();
-        }
-
-        public static Int GetYofPoint(ECPoint R)
-        {
-            return R.YCoord.ToBigInteger();
-        }
-
-        public static Int ModAdd(Int A, Int B, Int M)
-        {
-            Int C = A.Add(B);
-            C = Mod(C, M);
-            return C;
-        }
-
-        public static Int ModSub(Int A, Int B, Int M)
-        {
-            Int C = A.Subtract(B);
-            C = Mod(C, M);
-            return C;
-        }
-
         public static Int ModMul(Int A, Int B, Int M)
         {
             Int C = A.Multiply(B);
             C = Mod(C, M);
-            return C;
-        }
-
-        public static Int ModSqr(Int A, Int M)
-        {
-            return ModMul(A, A, M);
-        }
-
-        public static Int ModInv(Int A, Int M)
-        {
-            A = Mod(A, M);
-            if (A.SignValue == 0)
-            {
-                throw new DivideByZeroException();
-            }
-            return A.ModInverse(M);
-        }
-
-        public static ECPoint PointAdd(ECPoint A, ECPoint B)
-        {
-            ECPoint C = A.Add(B);
             return C;
         }
 
