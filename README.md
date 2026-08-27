@@ -7,4 +7,4 @@ There were realisated next algorithms:
 3. Pollard`s Lambda
 4. Gaudry-Schost
 
-Unit tests are also included for the implemented algorithms.
+Unit tests for the implemented algorithms are also included.
