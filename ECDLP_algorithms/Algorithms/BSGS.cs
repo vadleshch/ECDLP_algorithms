@@ -17,10 +17,10 @@ namespace ECDLP_algorithms.Algorithms
             for (Int i = Int.Zero; i.CompareTo(m) < 0; i = i.Add(Int.One))
             {
                 T[secp256k1Group.PointKey(x)] = i;
-                x = secp256k1Group.PointSub(x, P);
+                x = x.Subtract(P);
             }
-            ECPoint y = secp256k1Group.Infinity;
-            ECPoint mP = secp256k1Group.PointMul(P, m);
+            ECPoint y = P.Curve.Infinity;
+            ECPoint mP = P.Multiply(m);
             for (Int i = Int.Zero; i.CompareTo(m) < 0; i = i.Add(Int.One))
             {
 

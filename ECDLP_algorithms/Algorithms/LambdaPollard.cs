@@ -1,83 +1,117 @@
-﻿using System;
+﻿using Org.BouncyCastle.Math.EC;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
-using Org.BouncyCastle.Math.EC;
 using Int = Org.BouncyCastle.Math.BigInteger;
+using ECPoint = Org.BouncyCastle.Math.EC.ECPoint;
 
 namespace ECDLP_algorithms.Algorithms
 {
-    internal class LambdaPollard
+    public class LambdaPollard
     {
+        private const int NumberOfPartitions = 32;
+        private const int T = 4;
 
-        public static Int Solve(ECPoint P, ECPoint Q, Int r)
+        public static Int Solve(ECPoint P, ECPoint Q, Int a, Int b, CancellationToken token)
         {
+            P = P.Normalize();
+            Q = Q.Normalize();
 
-            Int N1 = Int.ValueOf(65536);
-            Int N = N1.Multiply(Int.ValueOf(2)).Add(Int.One);
+            Int N = b.Subtract(a).Add(Int.One);
 
-            Random rnd = new Random();
+            Int m = Arithmetics.SqrtCeil(N);
 
-            int n = 32;
-            int t = 3;
-
-            Int NDivT = N.Add(Int.ValueOf(t - 1)).Divide(Int.ValueOf(t));
-
-            int maxStep = Arithmetics.SqrtCeil(NDivT).IntValue;
-
-            int[] U = new int[n];
-
-            for (int i = 0; i < n; i++)
+            while (!token.IsCancellationRequested)
             {
-                U[i] = rnd.Next(1, maxStep + 1);
-            }
+                Int start = a.Add(RandomBelow(N));
+                List<Int> U = new List<Int>();
+                List<ECPoint> V = new List<ECPoint>();
+                CreateSteps(P, m, U, V);
 
+                ECPoint x = P.Multiply(start);
+                Int dT = Int.Zero;
+                Int tameDistance = b.Subtract(start).Add(N.Multiply(Int.ValueOf(T)));
 
-            Int sqrtTN = Arithmetics.SqrtCeil(N.Multiply(Int.ValueOf(t)));
-
-            int tameSteps = sqrtTN.Add(Int.One).Divide(Int.ValueOf(2)).IntValue;
-
-            ECPoint x = P.Multiply(N1);
-            Int a = N1;
-
-            for (int i = 0; i < tameSteps; i++)
-            {
-                (x, a) = F(x, a, P, U);
-            }
-
-
-            ECPoint y = Q;
-            Int b = Int.Zero;
-
-            while (!x.Equals(y))
-            {
-                if (b.CompareTo(N1.Add(a).Add(Int.One)) > 0)
+                while (dT.CompareTo(tameDistance) < 0)
                 {
-                    return Int.ValueOf(-1);
+                    (x, dT) = F(x, dT, U, V);
                 }
-                (y, b) = F(y, b, P, U);
+
+                ECPoint y = Q;
+                Int dW = Int.Zero;
+
+                while (!y.Equals(x) && dW.CompareTo(start.Subtract(a).Add(dT)) <= 0)
+                {
+                    (y, dW) = F(y, dW, U, V);
+                }
+
+                if (y.Equals(x))
+                {
+                    return start.Add(dT).Subtract(dW);
+                }
             }
-            return a.Subtract(b).Mod(r);
+            return Int.ValueOf(-1);
         }
 
-
-        private static (ECPoint, Int) F(ECPoint R, Int a, ECPoint P, int[] U)
+        private static (ECPoint, Int) F(ECPoint R, Int d, List<Int> U, List<ECPoint> V)
         {
-            int s = S(R);
-            R = R.Add(P.Multiply(Int.ValueOf(U[s])));
-            a = a.Add(Int.ValueOf(U[s]));
-            return (R, a);
+            int i = S(R, U.Count);
+            R = R.Add(V[i]);
+            d = d.Add(U[i]);
+            return (R, d);
         }
 
-
-        private static int S(ECPoint R)
+        private static int S(ECPoint R, int numberOfPartitions)
         {
             if (R.IsInfinity)
             {
                 return 0;
             }
+
             R = R.Normalize();
             Int x = R.AffineXCoord.ToBigInteger();
-            return x.Mod(Int.ValueOf(32)).IntValue;
+            return x.Mod(Int.ValueOf(numberOfPartitions)).IntValue;
+        }
+
+        private static void CreateSteps(ECPoint P, Int m, List<Int> U, List<ECPoint> V)
+        {
+            Int maxStep = m.Multiply(Int.ValueOf(2));
+
+            for (int i = 0; i < NumberOfPartitions; i++)
+            {
+                Int u;
+
+                if (i == 0)
+                {
+                    u = Int.One;
+                }
+                else
+                {
+                    u = RandomBelow(maxStep).Add(Int.One);
+                }
+
+                U.Add(u);
+                V.Add(P.Multiply(u));
+            }
+        }
+
+        private static Int RandomBelow(Int n)
+        {
+            int length = (n.BitLength + 7) / 8;
+            int excessBits = length * 8 - n.BitLength;
+            byte[] bytes = new byte[length];
+            Int result;
+
+            do
+            {
+                RandomNumberGenerator.Fill(bytes);
+                bytes[0] &= (byte)(255 >> excessBits);
+                result = new Int(1, bytes);
+            }
+            while (result.CompareTo(n) >= 0);
+
+            return result;
         }
     }
 }

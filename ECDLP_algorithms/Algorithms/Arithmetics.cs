@@ -39,5 +39,7 @@ namespace ECDLP_algorithms.Algorithms
 
             return X;
         }
+
+
     }
 }

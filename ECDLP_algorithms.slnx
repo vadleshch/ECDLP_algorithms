@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="ECDLP_algorithms/ECDLP_algorithms.csproj" />
+  <Project Path="UnitTests/UnitTests.csproj" Id="ab8c1380-b330-40f8-8385-2426f47157f9" />
 </Solution>
