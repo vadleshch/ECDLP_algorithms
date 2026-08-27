@@ -108,8 +108,59 @@ namespace ECDLP_algorithms.Tests
         }
     }
 
-
     [TestFixture]
+    public class GaudrySchostTests
+    {
+        [Test]
+        public void Test1()
+        {
+            CancellationToken token = new CancellationToken();
+            ECPoint P = secp256k1Group.G.Normalize();
+
+            Int a = Int.Zero;
+            Int b = Int.ValueOf(100);
+            Int k = Int.ValueOf(37);
+
+            ECPoint Q = P.Multiply(k).Normalize();
+
+            Int result = GaudrySchost.Solve(P, Q, a, b, token);
+
+            Assert.That(result, Is.EqualTo(k));
+        }
+
+        [Test]
+        public void Test2()
+        {
+            ECPoint P = secp256k1Group.G.Normalize();
+
+            Int a = Int.ValueOf(100);
+            Int b = Int.ValueOf(500);
+            Int k = Int.ValueOf(237);
+
+            ECPoint Q = P.Multiply(k).Normalize();
+
+            Int result = GaudrySchost.Solve(P, Q, a, b, new CancellationToken());
+
+            Assert.That(result, Is.EqualTo(k));
+        }
+
+        [Test]
+        public void Test3()
+        {
+            ECPoint P = secp256k1Group.G.Normalize();
+
+            Int a = Int.ValueOf(1000);
+            Int b = Int.ValueOf(2000);
+            Int k = Int.ValueOf(1729);
+
+            ECPoint Q = P.Multiply(k).Normalize();
+
+            Int result = GaudrySchost.Solve(P, Q, a, b, new CancellationToken());
+
+            Assert.That(result, Is.EqualTo(k));
+        }
+    }
+
     [TestFixture]
     public class RhoPollardTests
     {

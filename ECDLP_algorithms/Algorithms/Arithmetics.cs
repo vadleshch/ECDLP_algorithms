@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Math.EC;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using Int = Org.BouncyCastle.Math.BigInteger;
 //using ClassicBigInteger = System.Numerics.BigInteger;
@@ -40,6 +41,22 @@ namespace ECDLP_algorithms.Algorithms
             return X;
         }
 
+        public static Int RandomBelow(Int n)
+        {
+            int length = (n.BitLength + 7) / 8;
+            int excessBits = length * 8 - n.BitLength;
+            byte[] bytes = new byte[length];
+            Int result;
 
+            do
+            {
+                RandomNumberGenerator.Fill(bytes);
+                bytes[0] &= (byte)(255 >> excessBits);
+                result = new Int(1, bytes);
+            }
+            while (result.CompareTo(n) >= 0);
+
+            return result;
+        }
     }
 }
