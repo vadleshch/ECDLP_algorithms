@@ -24,7 +24,7 @@ namespace ECDLP_algorithms.Algorithms
 
             while (!token.IsCancellationRequested)
             {
-                Int start = a.Add(RandomBelow(N));
+                Int start = a.Add(Arithmetics.RandomBelow(N));
                 List<Int> U = new List<Int>();
                 List<ECPoint> V = new List<ECPoint>();
                 CreateSteps(P, m, U, V);
@@ -88,30 +88,12 @@ namespace ECDLP_algorithms.Algorithms
                 }
                 else
                 {
-                    u = RandomBelow(maxStep).Add(Int.One);
+                    u = Arithmetics.RandomBelow(maxStep).Add(Int.One);
                 }
 
                 U.Add(u);
                 V.Add(P.Multiply(u));
             }
-        }
-
-        private static Int RandomBelow(Int n)
-        {
-            int length = (n.BitLength + 7) / 8;
-            int excessBits = length * 8 - n.BitLength;
-            byte[] bytes = new byte[length];
-            Int result;
-
-            do
-            {
-                RandomNumberGenerator.Fill(bytes);
-                bytes[0] &= (byte)(255 >> excessBits);
-                result = new Int(1, bytes);
-            }
-            while (result.CompareTo(n) >= 0);
-
-            return result;
         }
     }
 }

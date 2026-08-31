@@ -4,17 +4,16 @@ using Org.BouncyCastle.Security;
 using System;
 using System.Diagnostics;
 using System.Threading;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 using Int = Org.BouncyCastle.Math.BigInteger;
 
-//TestBSGS();
-TestLambda();
-TestGaudrySchost();
+TestBSGS();
+//TestLambda();
+//TestGaudrySchost();
 
 static void TestBSGS()
 {
     int[] lengths = { 16, 24, 32, 40, 48 };
-    int tests = 20;
+    int tests = 5;
 
     Console.WriteLine("BSGS");
 
@@ -90,8 +89,10 @@ static void TestBSGS()
 static void TestLambda()
 {
     int[] lengths = { 16, 24, 32, 40, /*48 */};
-    int tests = 1;
-    int threads = 5;
+    int tests = 5;
+    int threads = 1;
+
+    LambdaPollard.Solve(secp256k1Group.G, secp256k1Group.G.Multiply(Int.ValueOf(123)), Int.ValueOf(0), Int.ValueOf(256), new CancellationToken());
 
     Console.WriteLine("Lambda Pollard");
 
@@ -181,7 +182,7 @@ static void TestLambda()
             testTime /= threads;
 
             time += testTime;
-            memory += (maxMemory - startMemory) / 1024.0 / 1024.0;
+            memory += (maxMemory - startMemory) / 1024.0 / 1024.0 / threads;
         }
         Console.WriteLine($"\nKey length: {length} bit");
         Console.WriteLine($"Average time: {time / tests:F3} s");
@@ -192,8 +193,10 @@ static void TestLambda()
 static void TestGaudrySchost()
 {
     int[] lengths = { 16, 24, 32, 40,/* 48*/ };
-    int tests = 1;
-    int threads = 5;
+    int tests = 5;
+    int threads = 1;
+
+    GaudrySchost.Solve(secp256k1Group.G, secp256k1Group.G.Multiply(Int.ValueOf(123)), Int.ValueOf(0), Int.ValueOf(256), new CancellationToken());
 
     Console.WriteLine("Gaudry-Schost");
 
