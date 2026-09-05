@@ -6,9 +6,9 @@ using System.Diagnostics;
 using System.Threading;
 using Int = Org.BouncyCastle.Math.BigInteger;
 
-//TestBSGS();
-//TestLambda();
-//TestGaudrySchost();
+TestBSGS();
+TestLambda();
+TestGaudrySchost();
 TestBernsteinLange();
 
 static void TestBSGS()

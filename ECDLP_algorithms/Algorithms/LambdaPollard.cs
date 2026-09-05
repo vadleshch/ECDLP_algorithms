@@ -11,7 +11,7 @@ namespace ECDLP_algorithms.Algorithms
     public class LambdaPollard
     {
         private const int NumberOfPartitions = 32;
-        private const int T = 1;
+        private const int T = 4;
 
         public static Int Solve(ECPoint P, ECPoint Q, Int a, Int b, CancellationToken token)
         {
