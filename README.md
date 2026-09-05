@@ -6,5 +6,6 @@ There were realisated next algorithms:
 2. Pollard`s Rho
 3. Pollard`s Lambda
 4. Gaudry-Schost
+5. Brenstein-Lange
 
 Unit tests for the implemented algorithms are also included.
